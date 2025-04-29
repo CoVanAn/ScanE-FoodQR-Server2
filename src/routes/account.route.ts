@@ -54,7 +54,10 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
       const ownerAccountId = request.decodedAccessToken?.userId as number
       const accounts = await getAccountList(ownerAccountId)
       reply.send({
-        data: accounts,
+        data: accounts.map(account => ({
+          ...account,
+          role: account.role as "Owner" | "Employee"
+        })),
         message: 'Lấy danh sách nhân viên thành công'
       })
     }
@@ -76,7 +79,7 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
     async (request, reply) => {
       const account = await createEmployeeAccount(request.body)
       reply.send({
-        data: account,
+        data: { ...account, role: account.role as "Owner" | "Employee" },
         message: 'Tạo tài khoản thành công'
       })
     }
@@ -96,7 +99,7 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
       const accountId = request.params.id
       const account = await getEmployeeAccount(accountId)
       reply.send({
-        data: account,
+        data: { ...account, role: account.role as "Owner" | "Employee" },
         message: 'Lấy thông tin nhân viên thành công'
       })
     }
@@ -118,8 +121,11 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
       const accountId = request.params.id
       const body = request.body
       const account = await updateEmployeeAccount(accountId, body)
+      // if(socketId) {
+      //   fastify.io.to(socketId).emit('refresh-token',account)
+      // }
       reply.send({
-        data: account,
+        data: account as AccountResType['data'],
         message: 'Cập nhật thành công'
       })
     }
@@ -140,7 +146,7 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
       const accountId = request.params.id
       const account = await deleteEmployeeAccount(accountId)
       reply.send({
-        data: account,
+        data: { ...account, role: account.role as "Owner" | "Employee" },
         message: 'Xóa thành công'
       })
     }
@@ -158,7 +164,7 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
     async (request, reply) => {
       const account = await getMeController(request.decodedAccessToken?.userId as number)
       reply.send({
-        data: account,
+        data: { ...account, role: account.role as "Owner" | "Employee" },
         message: 'Lấy thông tin thành công'
       })
     }
@@ -180,7 +186,7 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
     async (request, reply) => {
       const result = await updateMeController(request.decodedAccessToken?.userId as number, request.body)
       reply.send({
-        data: result,
+        data: { ...result, role: result.role as "Owner" | "Employee" },
         message: 'Cập nhật thông tin thành công'
       })
     }
@@ -202,7 +208,7 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
     async (request, reply) => {
       const result = await changePasswordController(request.decodedAccessToken?.userId as number, request.body)
       reply.send({
-        data: result,
+        data: { ...result, role: result.role as "Owner" | "Employee" },
         message: 'Đổi mật khẩu thành công'
       })
     }

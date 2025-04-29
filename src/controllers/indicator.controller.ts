@@ -42,42 +42,80 @@ export const DashboardIndicatorController = async (query: DashboardIndicatorQuer
         }
     });
 
+    // // Tính số lượng món ăn được đặt thành công
+    // const dishMap = new Map<number, {
+    //     id: number;
+    //     name: string;
+    //     price: number;
+    //     description: string;
+    //     image: string;
+    //     status: string;
+    //     createdAt: Date;
+    //     updatedAt: Date;
+    //     successOrders: number;
+    // }>();
+
+    // completedOrders.forEach(order => {
+    //     const dish = order.dishSnapshot;
+    //     if (!dish) return;
+
+    //     if (!dishMap.has(dish.id)) {
+    //         dishMap.set(dish.id, {
+    //             id: dish.id!,
+    //             name: dish.name,
+    //             price: dish.price,
+    //             description: dish.description,
+    //             image: dish.image,
+    //             status: dish.status,
+    //             createdAt: dish.createdAt,
+    //             updatedAt: dish.updatedAt,
+    //             successOrders: order.quantity
+    //         });
+    //     } else {
+    //         const existing = dishMap.get(dish.id)!;
+    //         existing.successOrders += order.quantity;
+    //     }
+    // });
+
+    // const dishIndicator = Array.from(dishMap.values());
     // Tính số lượng món ăn được đặt thành công
-    const dishMap = new Map<number, {
-        id: number;
-        name: string;
-        price: number;
-        description: string;
-        image: string;
-        status: string;
-        createdAt: Date;
-        updatedAt: Date;
-        successOrders: number;
-    }>();
+const dishMap = new Map<number, {
+    id: number;
+    name: string;
+    price: number;
+    description: string;
+    image: string;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date;
+    successOrders: number;
+}>();
 
-    completedOrders.forEach(order => {
-        const dish = order.dishSnapshot;
-        if (!dish) return;
+completedOrders.forEach(order => {
+    const dishSnapshot = order.dishSnapshot;
+    if (!dishSnapshot || !dishSnapshot.dishId) return; // dishId mới là id gốc
 
-        if (!dishMap.has(dish.id)) {
-            dishMap.set(dish.id, {
-                id: dish.id!,
-                name: dish.name,
-                price: dish.price,
-                description: dish.description,
-                image: dish.image,
-                status: dish.status,
-                createdAt: dish.createdAt,
-                updatedAt: dish.updatedAt,
-                successOrders: order.quantity
-            });
-        } else {
-            const existing = dishMap.get(dish.id)!;
-            existing.successOrders += order.quantity;
-        }
-    });
+    const dishId = dishSnapshot.dishId; // dùng dishId, không dùng snapshot id
+    if (!dishMap.has(dishId)) {
+        dishMap.set(dishId, {
+            id: dishId,
+            name: dishSnapshot.name,
+            price: dishSnapshot.price,
+            description: dishSnapshot.description,
+            image: dishSnapshot.image,
+            status: dishSnapshot.status,
+            createdAt: dishSnapshot.createdAt,
+            updatedAt: dishSnapshot.updatedAt,
+            successOrders: order.quantity
+        });
+    } else {
+        const existing = dishMap.get(dishId)!;
+        existing.successOrders += order.quantity;
+    }
+});
 
-    const dishIndicator = Array.from(dishMap.values());
+const dishIndicator = Array.from(dishMap.values());
+
 
     // Tính doanh thu theo ngày
     const dateMap: Record<string, number> = {};
