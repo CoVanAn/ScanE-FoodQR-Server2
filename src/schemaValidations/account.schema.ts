@@ -6,7 +6,8 @@ export const AccountSchema = z.object({
   name: z.string(),
   email: z.string(),
   role: z.enum([Role.Owner, Role.Employee]),
-  avatar: z.string().nullable()
+  avatar: z.string().nullable(),
+  // socketId: z.string().nullable().optional()
 })
 
 export type AccountType = z.TypeOf<typeof AccountSchema>
@@ -34,7 +35,7 @@ export const CreateEmployeeAccountBody = z
     avatar: z.string().url().optional(),
     password: z.string().min(6).max(100),
     confirmPassword: z.string().min(6).max(100),
-    // role: z.enum([Role.Employee, Role.Owner]),
+    role: z.enum([Role.Employee, Role.Owner]).optional().default(Role.Employee)
   })
   .strict()
   .superRefine(({ confirmPassword, password }, ctx) => {
@@ -49,6 +50,8 @@ export const CreateEmployeeAccountBody = z
 
 export type CreateEmployeeAccountBodyType = z.TypeOf<typeof CreateEmployeeAccountBody>
 
+
+
 export const UpdateEmployeeAccountBody = z
   .object({
     name: z.string().trim().min(2).max(256),
@@ -57,7 +60,7 @@ export const UpdateEmployeeAccountBody = z
     changePassword: z.boolean().optional(),
     password: z.string().min(6).max(100).optional(),
     confirmPassword: z.string().min(6).max(100).optional(),
-    role    : z.enum([Role.Employee, Role.Owner]).optional()
+    role    : z.enum([Role.Employee, Role.Owner]).optional().default(Role.Employee)
   })
   .strict()
   .superRefine(({ confirmPassword, password, changePassword }, ctx) => {

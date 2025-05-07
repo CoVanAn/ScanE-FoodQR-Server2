@@ -11,6 +11,7 @@ import {
   updateEmployeeAccount,
   updateMeController
 } from '@/controllers/account.controller'
+import prisma from '@/database'
 import { requireLoginedHook, requireOwnerHook } from '@/hooks/auth.hooks'
 import {
   AccountIdParam,
@@ -121,9 +122,18 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
       const accountId = request.params.id
       const body = request.body
       const account = await updateEmployeeAccount(accountId, body)
-      // if(socketId) {
-      //   fastify.io.to(socketId).emit('refresh-token',account)
-      // }
+      const  socketId = await prisma.socket.findUnique({
+        where: {
+          accountId: accountId,
+        },
+        select: {
+          socketId: true
+        }
+      })
+      console.log('socketId mới', socketId)
+      if (socketId?.socketId) {
+        fastify.io.to(socketId.socketId).emit('refresh-token', account)
+      }
       reply.send({
         data: account as AccountResType['data'],
         message: 'Cập nhật thành công'
@@ -145,6 +155,20 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
     async (request, reply) => {
       const accountId = request.params.id
       const account = await deleteEmployeeAccount(accountId)
+      const  socketId = await prisma.socket.findUnique({
+        where: {
+          accountId: accountId,
+        },
+        select: {
+          socketId: true
+        }
+      })
+      console.log('account', accountId)
+      console.log('socketId', socketId)
+
+      if (socketId?.socketId) {
+        fastify.io.to(socketId.socketId).emit('logout', account)
+      }
       reply.send({
         data: { ...account, role: account.role as "Owner" | "Employee" },
         message: 'Xóa thành công'
