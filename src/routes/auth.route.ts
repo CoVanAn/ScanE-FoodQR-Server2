@@ -57,6 +57,7 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
       })
     }
   )
+// LOGIN VỚI GOOGLE
   fastify.post<{
     Reply: RefreshTokenResType
     Body: RefreshTokenBodyType

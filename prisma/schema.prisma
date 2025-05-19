@@ -38,6 +38,8 @@ model Dish {
   image         String
   status        String         @default("Available")
   dishSnapshots DishSnapshot[]
+  categoryId    Int?
+  category      Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull, onUpdate: NoAction)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -110,4 +112,12 @@ model Socket {
   account   Account? @relation(fields: [accountId], references: [id], onDelete: SetNull, onUpdate: NoAction)
   guestId   Int?     @unique
   guest     Guest?   @relation(fields: [guestId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  dishes    Dish[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -51,3 +51,40 @@ export const LogoutBody = z
   .strict()
 
 export type LogoutBodyType = z.TypeOf<typeof LogoutBody>
+
+// export const LoginGoogleBody = z
+//   .object({
+//     idToken: z.string()
+//   })
+//   .strict()
+
+// export type LoginGoogleBodyType = z.TypeOf<typeof LoginGoogleBody>
+// export const LoginGoogleRes = z.object({
+//   data: z.object({
+//     accessToken: z.string(),
+//     refreshToken: z.string(),
+//     account: z.object({
+//       id: z.number(),
+//       name: z.string(),
+//       email: z.string(),
+//       role: z.enum([Role.Owner, Role.Employee]),    
+//     })
+//   }),
+//   message: z.string()
+// })
+
+// export type LoginGoogleResType = z.TypeOf<typeof LoginGoogleRes>
+// export const LoginGoogleResBody = z.object({
+//   data: z.object({
+//     accessToken: z.string(),
+//     refreshToken: z.string(),
+//     account: z.object({
+//       id: z.number(),
+//       name: z.string(),
+//       email: z.string(),
+//       role: z.enum([Role.Owner, Role.Employee]),
+//     })
+//   }),
+//   message: z.string()
+// })
+// export type LoginGoogleResBodyType = z.TypeOf<typeof LoginGoogleResBody>

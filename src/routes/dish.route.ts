@@ -1,8 +1,10 @@
-import { createDish, deleteDish, getDishDetail, getDishList, updateDish } from '@/controllers/dish.controller'
+import { createDish, deleteDish, getDishesByCategory, getDishDetail, getDishList, updateDish } from '@/controllers/dish.controller'
 import { requireLoginedHook } from '@/hooks/auth.hooks'
 import {
   CreateDishBody,
   CreateDishBodyType,
+  DishByCategoryParams,
+  DishByCategoryParamsType,
   DishListRes,
   DishListResType,
   DishParams,
@@ -124,6 +126,28 @@ export default async function dishRoutes(fastify: FastifyInstance, options: Fast
       reply.send({
         message: 'Xóa món ăn thành công!',
         data: result as DishResType['data']
+      })
+    }
+  )
+  
+  fastify.get<{
+    Params: DishByCategoryParamsType
+    Reply: DishListResType
+  }>(
+    '/by-category/:categoryId',
+    {
+      schema: {
+        params: DishByCategoryParams,
+        response: {
+          200: DishListRes
+        }
+      }
+    },
+    async (request, reply) => {
+      const dishes = await getDishesByCategory(request.params.categoryId)
+      reply.send({
+        data: dishes as DishListResType['data'],
+        message: `Lấy danh sách món ăn theo loại hàng thành công!`
       })
     }
   )

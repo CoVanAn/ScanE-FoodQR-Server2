@@ -6,10 +6,18 @@ export const CreateDishBody = z.object({
   price: z.coerce.number().positive(),
   description: z.string().max(10000),
   image: z.string().url(),
-  status: z.enum(DishStatusValues).optional()
+  status: z.enum(DishStatusValues).optional(),
+  categoryId: z.number().nullable().optional()
 })
 
 export type CreateDishBodyType = z.TypeOf<typeof CreateDishBody>
+
+export const CategorySchemaForDish = z.object({
+  id: z.number(),
+  name: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date()
+})
 
 export const DishSchema = z.object({
   id: z.number(),
@@ -18,6 +26,8 @@ export const DishSchema = z.object({
   description: z.string(),
   image: z.string(),
   status: z.enum(DishStatusValues),
+  categoryId: z.number().nullable(),
+  category: CategorySchemaForDish.nullable().optional(),
   createdAt: z.date(),
   updatedAt: z.date()
 })
@@ -35,6 +45,12 @@ export const DishListRes = z.object({
 })
 
 export type DishListResType = z.TypeOf<typeof DishListRes>
+
+export const DishByCategoryParams = z.object({
+  categoryId: z.coerce.number()
+})
+
+export type DishByCategoryParamsType = z.TypeOf<typeof DishByCategoryParams>
 
 export const UpdateDishBody = CreateDishBody
 export type UpdateDishBodyType = CreateDishBodyType
