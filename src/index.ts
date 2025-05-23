@@ -23,6 +23,7 @@ import orderRoutes from '@/routes/order.route'
 import { socketPlugin } from '@/plugins/socket.plugins'
 import indicatorRoutes from './routes/indicator.route'
 import categoryRoutes from './routes/category.route'
+import vnpayRoutes from './routes/vnpay.route'
 
 const fastify = Fastify({
   logger: false
@@ -87,6 +88,9 @@ const start = async () => {
     })
     fastify.register(categoryRoutes, {
       prefix: '/categories'
+    })
+    fastify.register(vnpayRoutes, {
+      prefix: '/vnpay'
     })
     await initOwnerAccount()
     await fastify.listen({
