@@ -86,6 +86,7 @@ const dishMap = new Map<number, {
     description: string;
     image: string;
     status: string;
+    categoryId: number;
     createdAt: Date;
     updatedAt: Date;
     successOrders: number;
@@ -103,6 +104,7 @@ completedOrders.forEach(order => {
             price: dishSnapshot.price,
             description: dishSnapshot.description,
             image: dishSnapshot.image,
+            categoryId: null as any, // Chưa có categoryId trong snapshot
             status: dishSnapshot.status,
             createdAt: dishSnapshot.createdAt,
             updatedAt: dishSnapshot.updatedAt,
