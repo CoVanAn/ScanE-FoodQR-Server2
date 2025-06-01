@@ -46,13 +46,13 @@ export default async function vnPay(fastify: FastifyInstance, options: FastifyPl
         // Log kết quả
         console.log('VNPay Payment Callback:', request.query);
         
-        // Redirect về trang thông báo kết quả thanh toán
+        // Redirect về trang callback của frontend
         if (result.isValid && result.data.vnp_ResponseCode === '00') {
           // Thanh toán thành công
-          return reply.redirect('/thanh-toan-thanh-cong?txnRef=' + result.data.vnp_TxnRef);
+          return reply.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/guest/payment-callback?status=success&txnRef=${result.data.vnp_TxnRef}`);
         } else {
           // Thanh toán thất bại
-          return reply.redirect('/thanh-toan-that-bai?txnRef=' + result.data.vnp_TxnRef);
+          return reply.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/guest/payment-callback?status=failed&txnRef=${result.data.vnp_TxnRef}`);
         }
       } catch (error: any) {
         console.error('VNPay Payment Error:', error);
