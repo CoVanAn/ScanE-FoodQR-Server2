@@ -1,7 +1,8 @@
 import { VNPay, ignoreLogger, ProductCode, VnpLocale, dateFormat } from 'vnpay';
 import { API_URL } from '@/config';
 import prisma from '@/database';
-import { OrderStatus } from '@/constants/type';
+import { OrderStatus, PaymentStatus } from '@/constants/type';
+import { debugSocketRooms } from '@/utils/socket';
 
 // Khởi tạo instance VNPay
 const vnpay = new VNPay({
@@ -44,15 +45,18 @@ export const createPaymentUrl = async (amount: number, ipAddr: string, orderInfo
 };
 
 // Xử lý callback sau khi thanh toán
-export const handlePaymentCallback = async (params: any) => {
+export const handlePaymentCallback = async (params: any, io?: any) => {
+    // Ghi log để kiểm tra io đã được truyền đúng chưa
+    console.log('VNPay Callback - IO instance received:', io ? 'Yes' : 'No');
+    
     // Kiểm tra tính hợp lệ của callback
     const isValidCallback = vnpay.verifyReturnUrl(params);
     
     // Nếu thanh toán thành công
     if (isValidCallback && params.vnp_ResponseCode === '00') {
-        try {
-            // Giải mã orderInfo để lấy ra orderIds
+        try {            // Giải mã orderInfo để lấy ra orderIds
             const orderInfo = params.vnp_OrderInfo || '';
+            console.log('Received VNPay orderInfo:', orderInfo);
             const parts = orderInfo.split('|');
             if (parts.length >= 2) {
                 const orderIdsString = parts[parts.length - 1];
@@ -60,12 +64,19 @@ export const handlePaymentCallback = async (params: any) => {
                 
                 try {
                     orderIds = JSON.parse(orderIdsString);
+                    console.log('Successfully parsed orderIds:', orderIds);
                 } catch (e) {
                     console.error('Failed to parse orderIds from orderInfo:', e);
+                    console.error('Original string:', orderIdsString);
+                    return {
+                        isValid: false,
+                        error: 'Invalid order IDs format',
+                        data: params
+                    };
                 }
                 
                 if (orderIds.length > 0) {
-                    // Cập nhật trạng thái của các đơn hàng thành "Paid"
+                    // Cập nhật trạng thái thanh toán của các đơn hàng thành "paid"
                     await prisma.order.updateMany({
                         where: {
                             id: {
@@ -73,7 +84,7 @@ export const handlePaymentCallback = async (params: any) => {
                             }
                         },
                         data: {
-                            status: OrderStatus.Paid
+                            payment: PaymentStatus.Paid
                         }
                     });
                     
@@ -89,6 +100,53 @@ export const handlePaymentCallback = async (params: any) => {
                             guest: true
                         }
                     });
+
+                    // Lấy thông tin socket của guest để emit sự kiện
+                    const guests = updatedOrders.map(order => order.guestId).filter(Boolean);
+                    if (guests.length > 0) {
+                        const socketRecords = await prisma.socket.findMany({
+                            where: {
+                                guestId: {
+                                    in: guests as number[]
+                                }
+                            }
+                        });                        // Emit socket event về ManagerRoom để cập nhật real-time ở view của manager
+                        if (io && updatedOrders.length > 0) {
+                            try {
+                                const socketIds = socketRecords.map(record => record.socketId).filter(Boolean);
+                                
+                                // Kiểm tra trạng thái hiện tại của socket rooms
+                                await debugSocketRooms(io);
+                                
+                                // Gửi thông báo đến tất cả manager
+                                console.log('Emitting payment update to manager-room:', { 
+                                    totalUpdatedOrders: updatedOrders.length,
+                                    orderIds: updatedOrders.map(order => order.id)
+                                });
+                                
+                                // Đảm bảo cập nhật được gửi đến toàn bộ phòng manager
+                                io.to('manager-room').emit('payment', updatedOrders);
+                                
+                                // Đồng thời gửi sự kiện update-order để tương thích với các client đang lắng nghe sự kiện này
+                                io.to('manager-room').emit('update-order', updatedOrders[0]);
+                                
+                                // Gửi thông báo đến các guest liên quan
+                                console.log('Emitting to guest socket IDs:', socketIds);
+                                socketIds.forEach(socketId => {
+                                    if (socketId) {
+                                        io.to(socketId).emit('payment', updatedOrders);
+                                    }
+                                });
+                            } catch (error) {
+                                console.error('Error emitting socket events:', error);
+                            }
+                        } else {
+                            console.log('Socket emission skipped:', { 
+                                hasIoInstance: !!io, 
+                                ordersCount: updatedOrders.length 
+                            });
+                        }
+                    }
                     
                     return {
                         isValid: true,

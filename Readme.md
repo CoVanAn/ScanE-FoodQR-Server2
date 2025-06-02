@@ -1,32 +1,70 @@
-# Giới thiệu về API
+# Báo cáo kỹ thuật - Backend API ScanE
 
-Đây là backend API cho dự án Order món ă
+## 1. Giới thiệu
 
-- Authentication: Login, Register, Logout
-- Account: Get thông tin cá nhân, Cập nhật thông tin cá nhân
-- Dish: Đọc, Thêm, Sửa, Xóa món ăn
-- Media: Upload hình ảnh
-- Test API
+ScanE là dự án phát triển hệ thống quản lý và đặt món ăn cho nhà hàng thông qua mã QR. Backend API cung cấp các chức năng cốt lõi để hỗ trợ các tính năng của ứng dụng, bao gồm:
 
-> Lưu ý quan trọng: thỉnh thoảng nên pull code mới từ github repo của mình về, vì đôi khi mình có cập nhật logic API trong quá trình mình quay video
+- **Xác thực người dùng**: Đăng nhập, Đăng ký, Đăng xuất
+- **Quản lý tài khoản**: Xem và cập nhật thông tin cá nhân
+- **Quản lý món ăn**: CRUD (Tạo, Đọc, Cập nhật, Xóa) các món ăn
+- **Quản lý danh mục**: Phân loại và quản lý danh mục món ăn
+- **Quản lý đơn hàng**: Theo dõi và xử lý đơn đặt hàng
+- **Quản lý bàn**: Theo dõi trạng thái bàn trong nhà hàng
+- **Upload media**: Tải lên và quản lý hình ảnh món ăn
+- **Realtime updates**: Cập nhật trạng thái đơn hàng theo thời gian thực
 
-> Trong file `server/.env` có thuộc tính `COOKIE_MODE`, hãy set `true` nếu bạn muốn dùng cookie cho việc authentication ở server
+## 2. Kiến trúc hệ thống và Công nghệ
 
-## Công nghệ sử dụng
+### 2.1. Công nghệ sử dụng
 
-Node.js + Fastify + Sqlite
+Backend API của ScanE được xây dựng dựa trên các công nghệ hiện đại:
 
-## Cài đặt
+- **Node.js**: Môi trường runtime JavaScript phía máy chủ
+- **TypeScript**: Ngôn ngữ lập trình tĩnh hóa JavaScript
+- **Fastify**: Framework API hiệu năng cao cho Node.js
+- **Prisma**: ORM hiện đại để tương tác với cơ sở dữ liệu
+- **SQLite**: Hệ quản trị cơ sở dữ liệu nhẹ, không cần cài đặt server riêng
+- **Socket.IO**: Thư viện hỗ trợ giao tiếp thời gian thực
+- **JWT**: JSON Web Token cho hệ thống xác thực
 
-Chỉ cần clone repository này về máy, cd vào thư mục, cài đặt các packages và chạy lệnh `npm run dev` là được
+### 2.2. Kiến trúc ứng dụng
 
+Backend được thiết kế theo mô hình MVC (Model-View-Controller) với các thành phần chính:
+
+- **Controllers**: Xử lý logic nghiệp vụ
+- **Routes**: Định tuyến và điều hướng request
+- **SchemaValidations**: Kiểm tra và xác thực dữ liệu đầu vào
+- **Prisma Models**: Tương tác với cơ sở dữ liệu
+- **Utils**: Các công cụ hỗ trợ phát triển
+
+## 3. Cài đặt và Triển khai
+
+### 3.1. Yêu cầu hệ thống
+
+- Node.js (>= 18.x)
+- npm hoặc yarn
+
+### 3.2. Hướng dẫn cài đặt
+
+1. Clone repository về máy local:
 ```bash
+git clone <repository-url>
 cd server
-npm i
+```
+
+2. Cài đặt các dependencies:
+```bash
+npm install
+```
+
+3. Chạy ứng dụng ở môi trường phát triển:
+```bash
 npm run dev
 ```
 
-Trong trường hợp muốn chạy dishion, chạy lệnh
+### 3.3. Triển khai môi trường production
+
+Để build và chạy ứng dụng ở môi trường production:
 
 ```bash
 npm run build
@@ -99,15 +137,41 @@ Trong trường hợp lỗi khác, server sẽ trả về lỗi trong trường 
 
 ## Chi tiết các API
 
-Mặc định API sẽ chạy ở địa chỉ [http://localhost:4000](http://localhost:4000), các bạn nào muốn đổi port thì vào file `.env` để thay đổi port
+## 4. Cấu hình hệ thống
 
-Với các API POST, PUT thông thường thì body gửi lên phải là JSON, và phải có header `Content-Type: application/json`.
+### 4.1. Cấu hình môi trường (.env)
 
-Đặc biệt API upload hình ảnh thì phải gửi dưới dạng `form-data`
+File `.env` chứa các thiết lập quan trọng cho hệ thống:
 
-API xác thực người dùng thông qua session token, session token này là một JWT, secret key JWT này sẽ được lưu trong file `.env` và được sử dụng để tạo và verify token
+```
+# Server Configuration
+PORT=4000                   # Port máy chủ API (mặc định: 4000)
+API_HOST=http://localhost   # Host máy chủ API
+NODE_ENV=development        # Môi trường (development/production)
 
-Đối với các API cần xác thực người dùng như bên cụm API về `Account` thì bạn cần gửi accessToken lên server thông qua header `Authorization: "Bearer <accessToken>"`
+# Authentication
+JWT_SECRET=your_secret_key  # Key bí mật cho JWT
+TOKEN_EXPIRE=3600           # Thời gian hết hạn token (giây)
+REFRESH_TOKEN_EXPIRE=604800 # Thời gian hết hạn refresh token (giây)
+COOKIE_MODE=false           # Chế độ xác thực sử dụng cookie (true/false)
+
+# Database
+DATABASE_URL=file:./dev.db  # URL kết nối cơ sở dữ liệu
+
+# Upload Configuration
+UPLOAD_DIR=uploads          # Thư mục lưu trữ file upload
+MAX_FILE_SIZE=5242880       # Kích thước tối đa cho file upload (byte)
+```
+
+> Lưu ý: Nếu thiết lập `COOKIE_MODE=true` hệ thống sẽ sử dụng cookie cho xác thực thay vì JWT trong header.
+
+### 4.2. Truy cập API
+
+- API mặc định hoạt động tại địa chỉ: [http://localhost:4000](http://localhost:4000)
+- Định dạng request:
+  - APIs POST/PUT: Content-Type: application/json
+  - APIs upload: Content-Type: multipart/form-data
+- Xác thực: Gửi token qua header `Authorization: "Bearer <accessToken>"``
 
 ### Test API: muốn biết api có hoạt động không
 

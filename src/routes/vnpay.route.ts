@@ -33,18 +33,27 @@ export default async function vnPay(fastify: FastifyInstance, options: FastifyPl
         });
       }
     }
-  );
-
-  // API callback sau khi thanh toán VNPay
+  );  // API callback sau khi thanh toán VNPay
   fastify.get(
     '/check-payment',
     async (request, reply) => {
       try {
-        // Xử lý callback từ VNPay
-        const result = await handlePaymentCallback(request.query);
+        // Kiểm tra và log io instance
+        if (!fastify.io) {
+          console.error('Socket.IO instance is not available on fastify');
+        } else {
+          console.log('Socket.IO instance is available for VNPay callback');
+        }
+        
+        // Xử lý callback từ VNPay và truyền io instance để emit socket events
+        const result = await handlePaymentCallback(request.query, fastify.io);
         
         // Log kết quả
-        console.log('VNPay Payment Callback:', request.query);
+        console.log('VNPay Payment Callback Result:', {
+          isValid: result.isValid,
+          responseCode: result.data?.vnp_ResponseCode,
+          ordersUpdated: !!result.orders
+        });
         
         // Redirect về trang callback của frontend
         if (result.isValid && result.data.vnp_ResponseCode === '00') {
@@ -56,7 +65,7 @@ export default async function vnPay(fastify: FastifyInstance, options: FastifyPl
         }
       } catch (error: any) {
         console.error('VNPay Payment Error:', error);
-        return reply.redirect('/thanh-toan-that-bai');
+        return reply.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/guest/payment-callback?status=failed`);
       }
     }
   );

@@ -1,4 +1,4 @@
-import { DishStatusValues, OrderStatusValues } from '@/constants/type'
+import { DishStatusValues, OrderStatusValues, PaymentStatusValues } from '@/constants/type'
 import { AccountSchema } from '@/schemaValidations/account.schema'
 import { TableSchema } from '@/schemaValidations/table.schema'
 import z from 'zod'
@@ -33,6 +33,7 @@ export const OrderSchema = z.object({
   orderHandlerId: z.number().nullable(),
   orderHandler: AccountSchema.nullable(),
   status: z.enum(OrderStatusValues),
+  payment: z.enum(PaymentStatusValues),
   createdAt: z.date(),
   updatedAt: z.date()
 })
@@ -40,7 +41,8 @@ export const OrderSchema = z.object({
 export const UpdateOrderBody = z.object({
   status: z.enum(OrderStatusValues),
   dishId: z.number(),
-  quantity: z.number()
+  quantity: z.number(),
+  payment: z.enum(PaymentStatusValues).optional()
 })
 
 export type UpdateOrderBodyType = z.TypeOf<typeof UpdateOrderBody>

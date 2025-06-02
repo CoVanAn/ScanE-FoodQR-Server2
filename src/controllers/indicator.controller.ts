@@ -14,7 +14,7 @@ export const DashboardIndicatorController = async (query: DashboardIndicatorQuer
                 gte: fromDate,
                 lte: toDate,
             },
-            status: "Paid"
+            payment: "paid"
         },
         include: {
             dishSnapshot: true

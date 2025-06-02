@@ -1,6 +1,6 @@
 import { DishStatus, OrderStatus, TableStatus } from '@/constants/type'
 import prisma from '@/database'
-import { CreateOrdersBodyType, UpdateOrderBodyType } from '@/schemaValidations/order.schema'
+import { CreateOrdersBodyType, UpdateOrderBodyType, PayGuestOrdersBodyType } from '@/schemaValidations/order.schema'
 
 export const createOrdersController = async (orderHandlerId: number, body: CreateOrdersBodyType) => {
   const { guestId, orders } = body
@@ -109,6 +109,7 @@ export const payOrdersController = async ({ guestId, orderHandlerId }: { guestId
   const orders = await prisma.order.findMany({
     where: {
       guestId,
+      payment: 'unpaid',
       status: {
         in: [OrderStatus.Pending, OrderStatus.Processing, OrderStatus.Delivered]
       }
@@ -126,7 +127,7 @@ export const payOrdersController = async ({ guestId, orderHandlerId }: { guestId
         }
       },
       data: {
-        status: OrderStatus.Paid,
+        payment: 'paid',
         orderHandlerId
       }
     })
@@ -178,7 +179,7 @@ export const updateOrderController = async (
   orderId: number,
   body: UpdateOrderBodyType & { orderHandlerId: number }
 ) => {
-  const { status, dishId, quantity, orderHandlerId } = body
+  const { status, dishId, quantity, orderHandlerId, payment } = body
   const result = await prisma.$transaction(async (tx) => {
     const order = await prisma.order.findUniqueOrThrow({
       where: {
@@ -207,16 +208,25 @@ export const updateOrderController = async (
       })
       dishSnapshotId = dishSnapshot.id
     }
+    
+    // Create update data object with required fields
+    const updateData: any = {
+      status,
+      dishSnapshotId,
+      quantity,
+      orderHandlerId
+    };
+    
+    // Add payment field if provided
+    if (payment) {
+      updateData.payment = payment;
+    }
+    
     const newOrder = await tx.order.update({
       where: {
         id: orderId
       },
-      data: {
-        status,
-        dishSnapshotId,
-        quantity,
-        orderHandlerId
-      },
+      data: updateData,
       include: {
         dishSnapshot: true,
         orderHandler: true,

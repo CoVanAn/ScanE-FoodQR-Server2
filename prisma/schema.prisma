@@ -81,6 +81,7 @@ model Order {
   orderHandler   Account?     @relation(fields: [orderHandlerId], references: [id], onDelete: SetNull, onUpdate: NoAction)
   orderHandlerId Int?
   status         String       @default("Pending")
+  payment        String       @default("unpaid") // unpaid, paid
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }

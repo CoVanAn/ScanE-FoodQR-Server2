@@ -33,16 +33,24 @@ export const OrderStatus = {
   Pending: 'Pending',
   Processing: 'Processing',
   Rejected: 'Rejected',
-  Delivered: 'Delivered',
-  Paid: 'Paid'
+  Delivered: 'Delivered'
 } as const
 
 export const OrderStatusValues = [
   OrderStatus.Pending,
   OrderStatus.Processing,
   OrderStatus.Rejected,
-  OrderStatus.Delivered,
-  OrderStatus.Paid
+  OrderStatus.Delivered
+] as const
+
+export const PaymentStatus = {
+  Unpaid: 'unpaid',
+  Paid: 'paid'
+} as const
+
+export const PaymentStatusValues = [
+  PaymentStatus.Unpaid,
+  PaymentStatus.Paid
 ] as const
 
 export const ManagerRoom = 'manager' as const
