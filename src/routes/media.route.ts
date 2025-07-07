@@ -1,11 +1,10 @@
 import { requireLoginedHook } from '@/hooks/auth.hooks'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
-import fastifyMultipart from '@fastify/multipart'
 import { uploadImage } from '@/controllers/media.controller'
 import { UploadImageRes, UploadImageResType } from '@/schemaValidations/media.schema'
 
 export default async function mediaRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
-  fastify.register(fastifyMultipart)
+  // Không đăng ký multipart ở đây vì đã đăng ký ở index.ts
   fastify.addHook('preValidation', fastify.auth([requireLoginedHook]))
 
   fastify.post<{
@@ -20,18 +19,15 @@ export default async function mediaRoutes(fastify: FastifyInstance, options: Fas
       }
     },
     async (request, reply) => {
-      const data = await request.file({
-        limits: {
-          fileSize: 1024 * 1024 * 10, // 10MB,
-          fields: 1,
-          files: 1
-        }
-      })
-      if (!data) {
-        throw new Error('Không tìm thấy file')
-      }
-      const url = await uploadImage(request)
-      return reply.send({ message: 'Upload ảnh thành công', data: '' })
+      console.log('🔍 Route: Starting upload process...');
+      
+      // Gọi controller để xử lý upload
+      const result = await uploadImage(request);
+      
+      return reply.send({ 
+        message: 'Upload ảnh thành công', 
+        data: result.url 
+      });
     }
   )
 }

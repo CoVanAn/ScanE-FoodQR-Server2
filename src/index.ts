@@ -10,6 +10,7 @@ import fastifyHelmet from '@fastify/helmet'
 import fastifySocketIO from 'fastify-socket.io'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
+import multipart from '@fastify/multipart'
 import path from 'path'
 import { createFolder } from '@/utils/helpers'
 import mediaRoutes from '@/routes/media.route'
@@ -33,6 +34,14 @@ const fastify = Fastify({
 const start = async () => {
   try {
     createFolder(path.resolve(envConfig.UPLOAD_FOLDER))
+    
+    // Đăng ký multipart plugin TRƯỚC tất cả
+    await fastify.register(multipart, {
+      limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB
+      }
+    })
+    
     const whitelist = ['*']
     fastify.register(cors, {
       origin: whitelist, // Cho phép tất cả các domain gọi API
@@ -98,6 +107,7 @@ const start = async () => {
     })
     console.log(`Server đang chạy: ${API_URL}`)
   } catch (err) {
+    console.error('❌ Server startup error:', err)
     fastify.log.error(err)
     process.exit(1)
   }
