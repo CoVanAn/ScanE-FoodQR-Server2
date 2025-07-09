@@ -96,7 +96,7 @@ Khi upload thì hình ảnh sẽ được đi vào thư mục `/uploads` trong f
     "name": "Iphone 11",
     "price": 20000000,
     "description": "Mô tả cho iphone 11",
-    "image": "http://localhost:4000/static/bec024f9ea534b7fbf078cb5462b30aa.jpg",
+    "image": "link ảnh (đang lưu trên cloudinary)",
     "createdAt": "2024-03-11T03:51:14.028Z",
     "updatedAt": "2024-03-11T03:51:14.028Z"
   },
