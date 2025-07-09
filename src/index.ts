@@ -12,9 +12,9 @@ import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import multipart from '@fastify/multipart'
 import path from 'path'
-import { createFolder } from '@/utils/helpers'
+// import { createFolder } from '@/utils/helpers' // Removed for cloud-only storage
 import mediaRoutes from '@/routes/media.route'
-import staticRoutes from '@/routes/static.route'
+// import staticRoutes from '@/routes/static.route' // Removed for cloud-only storage
 import dishRoutes from '@/routes/dish.route'
 import testRoutes from '@/routes/test.route'
 import { initOwnerAccount } from '@/controllers/account.controller'
@@ -33,7 +33,7 @@ const fastify = Fastify({
 // Run the server!
 const start = async () => {
   try {
-    createFolder(path.resolve(envConfig.UPLOAD_FOLDER))
+    // createFolder(path.resolve(envConfig.UPLOAD_FOLDER)) // Removed for cloud-only storage
     
     // Đăng ký multipart plugin TRƯỚC tất cả
     await fastify.register(multipart, {
@@ -74,9 +74,9 @@ const start = async () => {
     fastify.register(mediaRoutes, {
       prefix: '/media'
     })
-    fastify.register(staticRoutes, {
-      prefix: '/static'
-    })
+    // fastify.register(staticRoutes, { // Removed for cloud-only storage
+    //   prefix: '/static'
+    // })
     fastify.register(dishRoutes, {
       prefix: '/dishes'
     })

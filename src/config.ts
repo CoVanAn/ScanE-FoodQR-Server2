@@ -20,7 +20,7 @@ const configSchema = z.object({
   CLOUDINARY_API_SECRET: z.string(),
   CLOUDINARY_FOLDER: z.string().default('foodqr'),
   
-  UPLOAD_FOLDER: z.string().default('uploads'),
+  // UPLOAD_FOLDER: z.string().default('uploads'), // Removed for cloud-only storage
   INITIAL_EMAIL_OWNER: z.string().default('admin@order.com'),
   INITIAL_PASSWORD_OWNER: z.string().default('123456'),
   CLIENT_URL: z.string().default('http://localhost:3000'),
@@ -49,7 +49,7 @@ const configProject = configSchema.safeParse({
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
   CLOUDINARY_FOLDER: process.env.CLOUDINARY_FOLDER,
   
-  UPLOAD_FOLDER: process.env.UPLOAD_FOLDER,
+  // UPLOAD_FOLDER: process.env.UPLOAD_FOLDER, // Removed for cloud-only storage
   INITIAL_EMAIL_OWNER: process.env.INITIAL_EMAIL_OWNER,
   INITIAL_PASSWORD_OWNER: process.env.INITIAL_PASSWORD_OWNER,
   CLIENT_URL: process.env.CLIENT_URL,
