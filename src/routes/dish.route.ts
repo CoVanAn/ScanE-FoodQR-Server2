@@ -1,4 +1,4 @@
-import { createDish, deleteDish, getDishesByCategory, getDishDetail, getDishList, updateDish } from '@/controllers/dish.controller'
+import { createDish, deleteDish, getDishesByCategory, getDishDetail, getDishList, getFeaturedDishes, updateDish, updateDishFeatured } from '@/controllers/dish.controller'
 import { requireLoginedHook } from '@/hooks/auth.hooks'
 import {
   CreateDishBody,
@@ -33,6 +33,27 @@ export default async function dishRoutes(fastify: FastifyInstance, options: Fast
       reply.send({
         data: dishs as DishListResType['data'],
         message: 'Lấy danh sách món ăn thành công!'
+      })
+    }
+  )
+
+  // Get featured dishes for public display
+  fastify.get<{
+    Reply: DishListResType
+  }>(
+    '/featured',
+    {
+      schema: {
+        response: {
+          200: DishListRes
+        }
+      }
+    },
+    async (request, reply) => {
+      const featuredDishes = await getFeaturedDishes()
+      reply.send({
+        data: featuredDishes as DishListResType['data'],
+        message: 'Lấy danh sách món ăn nổi bật thành công!'
       })
     }
   )

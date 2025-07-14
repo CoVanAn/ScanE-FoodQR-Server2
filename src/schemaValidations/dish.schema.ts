@@ -4,9 +4,11 @@ import z from 'zod'
 export const CreateDishBody = z.object({
   name: z.string().min(1).max(256),
   price: z.coerce.number().positive(),
-  description: z.string().max(10000),
+  description: z.string().max(10000).default(""),  // Default empty string
   image: z.string().url().optional(),
   status: z.enum(DishStatusValues).optional(),
+  isFeatured: z.boolean().optional(),
+  featuredOrder: z.number().int().positive().nullable().optional(),
   categoryId: z.number().nullable().optional()
 })
 
@@ -26,6 +28,8 @@ export const DishSchema = z.object({
   description: z.string(),
   image: z.string(),
   status: z.enum(DishStatusValues),
+  isFeatured: z.boolean(),
+  featuredOrder: z.number().nullable(),
   categoryId: z.number().nullable(),
   category: CategorySchemaForDish.nullable().optional(),
   createdAt: z.date(),

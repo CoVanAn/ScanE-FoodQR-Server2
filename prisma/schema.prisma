@@ -35,6 +35,8 @@ model Dish {
   description   String
   image         String
   status        String         @default("Available")
+  isFeatured    Boolean        @default(false)
+  featuredOrder Int?           
   categoryId    Int?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
