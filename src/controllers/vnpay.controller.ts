@@ -1,7 +1,7 @@
 import { VNPay, ignoreLogger, ProductCode, VnpLocale, dateFormat } from 'vnpay';
 import { API_URL } from '@/config';
 import prisma from '@/database';
-import { OrderStatus, PaymentStatus } from '@/constants/type';
+import { OrderStatus, PaymentStatus, ManagerRoom } from '@/constants/type';
 import { debugSocketRooms } from '@/utils/socket';
 
 // Khởi tạo instance VNPay
@@ -119,16 +119,17 @@ export const handlePaymentCallback = async (params: any, io?: any) => {
                                 await debugSocketRooms(io);
                                 
                                 // Gửi thông báo đến tất cả manager
-                                console.log('Emitting payment update to manager-room:', { 
+                                console.log('Emitting payment update to ManagerRoom:', { 
                                     totalUpdatedOrders: updatedOrders.length,
-                                    orderIds: updatedOrders.map(order => order.id)
+                                    orderIds: updatedOrders.map(order => order.id),
+                                    room: ManagerRoom
                                 });
                                 
                                 // Đảm bảo cập nhật được gửi đến toàn bộ phòng manager
-                                io.to('manager-room').emit('payment', updatedOrders);
+                                io.to(ManagerRoom).emit('payment', updatedOrders);
                                 
                                 // Đồng thời gửi sự kiện update-order để tương thích với các client đang lắng nghe sự kiện này
-                                io.to('manager-room').emit('update-order', updatedOrders[0]);
+                                io.to(ManagerRoom).emit('update-order', updatedOrders[0]);
                                 
                                 // Gửi thông báo đến các guest liên quan
                                 console.log('Emitting to guest socket IDs:', socketIds);
