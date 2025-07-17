@@ -44,7 +44,7 @@ const start = async () => {
     
     const whitelist = ['*']
     fastify.register(cors, {
-      origin: whitelist, // Cho phép tất cả các domain gọi API
+      origin: envConfig.CLIENT_URL, // Allow your Vercel domain
       credentials: true // Cho phép trình duyệt gửi cookie đến server
     })
 
@@ -61,7 +61,8 @@ const start = async () => {
     fastify.register(errorHandlerPlugin)
     fastify.register(fastifySocketIO, {
       cors: {
-        origin: 'http://localhost:3000'
+        origin: envConfig.CLIENT_URL, // Lấy từ biến môi trường
+        credentials: true
       }
     })
     fastify.register(socketPlugin)

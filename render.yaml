@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: pho-coan-server
+    runtime: node
+    startCommand: npm run dev
+    buildCommand: npm ci && npm run build
+    plan: free
+    env:
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_URL
+        value: https://pho-coan.vercel.app
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: VNPAY_TMN_CODE
+        sync: false
+      - key: VNPAY_SECRET_KEY
+        sync: false
+      - key: VNPAY_URL
+        sync: false
+      - key: VNPAY_RETURN_URL
+        sync: false
