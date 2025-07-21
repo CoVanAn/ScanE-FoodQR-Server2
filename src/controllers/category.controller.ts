@@ -35,7 +35,9 @@ export const getCategoryDetail = (id: number) => {
 export const createCategory = async (data: CreateCategoryBodyType) => {
   try {
     const category = await prisma.category.create({
-      data
+      data: {
+        name: data.name
+      }
     })
     return category
   } catch (error) {

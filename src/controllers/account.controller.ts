@@ -211,7 +211,10 @@ export const createGuestController = async (body: CreateGuestBodyType) => {
     throw new Error(`Bàn ${table.number} đã bị ẩn, vui lòng chọn bàn khác`)
   }
   const guest = await prisma.guest.create({
-    data: body
+    data: {
+      name: body.name,
+      tableNumber: body.tableNumber
+    }
   })
   return guest
 }
