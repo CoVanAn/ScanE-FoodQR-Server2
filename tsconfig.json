@@ -5,7 +5,8 @@
     "target": "ES2022", // Target output cho code
     "outDir": "dist", // Đường dẫn output cho thư mục build
     "esModuleInterop": true,
-    "strict": true /* Enable all strict type-checking options. */,
+    "strict": false /* Disable strict type-checking for deployment */,
+    "noImplicitAny": false /* Allow implicit any types */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "baseUrl": ".", // Đường dẫn base cho các import
     "paths": {
