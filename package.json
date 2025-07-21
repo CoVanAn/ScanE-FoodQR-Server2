@@ -41,7 +41,9 @@
     "uuid": "^11.1.0",
     "vnpay": "^2.3.0",
     "zod": "^3.23.8",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.5.3"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -58,10 +60,8 @@
     "prisma": "^5.16.1",
     "prisma-dbml-generator": "^0.12.0",
     "ts-node": "^10.9.2",
-    "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
-    "tsx": "^4.16.0",
-    "typescript": "^5.5.3"
+    "tsx": "^4.16.0"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8",
