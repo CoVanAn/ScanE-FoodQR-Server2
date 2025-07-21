@@ -25,10 +25,10 @@ export const createTable = async (data: CreateTableBodyType) => {
     const result = await prisma.table.create({
       data: {
         token,
-        number: data.number,
-        capacity: data.capacity,
+        number: data.number || 1,
+        capacity: data.capacity || 4,
         status: data.status || 'Available'
-      }
+      } as any
     })
     return result
   } catch (error) {

@@ -36,8 +36,8 @@ export const createCategory = async (data: CreateCategoryBodyType) => {
   try {
     const category = await prisma.category.create({
       data: {
-        name: data.name
-      }
+        name: data.name || 'Default Category'
+      } as any
     })
     return category
   } catch (error) {

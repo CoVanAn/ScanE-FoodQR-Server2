@@ -212,9 +212,9 @@ export const createGuestController = async (body: CreateGuestBodyType) => {
   }
   const guest = await prisma.guest.create({
     data: {
-      name: body.name,
-      tableNumber: body.tableNumber
-    }
+      name: body.name || 'Guest',
+      tableNumber: body.tableNumber || 1
+    } as any
   })
   return guest
 }
