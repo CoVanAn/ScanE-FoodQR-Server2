@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npx nodemon --exec \"npx dotenv-cli tsx src/index.ts\"",
     "start": "node dist/index.js",
-    "build": "rimraf ./dist && tsc && tsc-alias",
+    "build": "rimraf ./dist && npx prisma generate && tsc && tsc-alias",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
