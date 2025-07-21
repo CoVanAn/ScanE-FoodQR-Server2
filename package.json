@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "npx nodemon --exec \"npx dotenv-cli tsx src/index.ts\"",
     "start": "node dist/index.js",
-    "build": "rimraf ./dist && npx prisma generate && tsc && tsc-alias",
+    "build": "rimraf ./dist && tsc && tsc-alias",
+    "build:production": "rimraf ./dist && npx prisma generate && tsc && tsc-alias",
+    "postinstall": "npx prisma generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
@@ -43,7 +45,9 @@
     "zod": "^3.23.8",
     "rimraf": "^6.0.1",
     "tsc-alias": "^1.8.10",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "prisma": "^5.16.1",
+    "prisma-dbml-generator": "^0.12.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -57,8 +61,6 @@
     "eslint-plugin-prettier": "^5.1.3",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.2",
-    "prisma": "^5.16.1",
-    "prisma-dbml-generator": "^0.12.0",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.16.0"
