@@ -1,7 +1,6 @@
 import prisma from '@/database'
 import { DashboardIndicatorQueryParamsType } from "@/schemaValidations/indicator.schema";
 import { format } from "date-fns";
-// import viLocale from "date-fns/locale/vi";
 import { vi } from "date-fns/locale";
 
 export const DashboardIndicatorController = async (query: DashboardIndicatorQueryParamsType) => {
@@ -42,81 +41,68 @@ export const DashboardIndicatorController = async (query: DashboardIndicatorQuer
         }
     });
 
-    // // Tính số lượng món ăn được đặt thành công
-    // const dishMap = new Map<number, {
-    //     id: number;
-    //     name: string;
-    //     price: number;
-    //     description: string;
-    //     image: string;
-    //     status: string;
-    //     createdAt: Date;
-    //     updatedAt: Date;
-    //     successOrders: number;
-    // }>();
+    const dishMap = new Map<number, {
+        id: number;
+        name: string;
+        price: number;
+        description: string;
+        image: string;
+        status: string;
+        categoryId: number | null;
+        isFeatured: boolean;
+        featuredOrder: number | null;
+        createdAt: Date;
+        updatedAt: Date;
+        successOrders: number;
+    }>();
 
-    // completedOrders.forEach(order => {
-    //     const dish = order.dishSnapshot;
-    //     if (!dish) return;
+    completedOrders.forEach(order => {
+        const dishSnapshot = order.dishSnapshot;
+        if (!dishSnapshot || !dishSnapshot.dishId) return; // dishId mới là id gốc
 
-    //     if (!dishMap.has(dish.id)) {
-    //         dishMap.set(dish.id, {
-    //             id: dish.id!,
-    //             name: dish.name,
-    //             price: dish.price,
-    //             description: dish.description,
-    //             image: dish.image,
-    //             status: dish.status,
-    //             createdAt: dish.createdAt,
-    //             updatedAt: dish.updatedAt,
-    //             successOrders: order.quantity
-    //         });
-    //     } else {
-    //         const existing = dishMap.get(dish.id)!;
-    //         existing.successOrders += order.quantity;
-    //     }
-    // });
+        const dishId = dishSnapshot.dishId; // dùng dishId, không dùng snapshot id
+        if (!dishMap.has(dishId)) {
+            dishMap.set(dishId, {
+                id: dishId,
+                name: dishSnapshot.name,
+                price: dishSnapshot.price,
+                description: dishSnapshot.description,
+                image: dishSnapshot.image,
+                categoryId: null as any, // Chưa có categoryId trong snapshot
+                status: dishSnapshot.status,
+                isFeatured: false, // Default value - should fetch from actual dish
+                featuredOrder: null, // Default value - should fetch from actual dish
+                createdAt: dishSnapshot.createdAt,
+                updatedAt: dishSnapshot.updatedAt,
+                successOrders: order.quantity
+            });
+        } else {
+            const existing = dishMap.get(dishId)!;
+            existing.successOrders += order.quantity;
+        }
+    });
 
-    // const dishIndicator = Array.from(dishMap.values());
-    // Tính số lượng món ăn được đặt thành công
-const dishMap = new Map<number, {
-    id: number;
-    name: string;
-    price: number;
-    description: string;
-    image: string;
-    status: string;
-    categoryId: number;
-    createdAt: Date;
-    updatedAt: Date;
-    successOrders: number;
-}>();
+    // Fetch actual dish data to get isFeatured and featuredOrder
+    const dishIds = Array.from(dishMap.keys());
+    const actualDishes = await prisma.dish.findMany({
+        where: {
+            id: {
+                in: dishIds
+            }
+        }
+    });
 
-completedOrders.forEach(order => {
-    const dishSnapshot = order.dishSnapshot;
-    if (!dishSnapshot || !dishSnapshot.dishId) return; // dishId mới là id gốc
+    // Update dishMap with actual data
+    actualDishes.forEach(dish => {
+        const dishData = dishMap.get(dish.id);
+        if (dishData) {
+            dishData.isFeatured = dish.isFeatured;
+            dishData.featuredOrder = dish.featuredOrder;
+            dishData.categoryId = dish.categoryId;
+        }
+    });
 
-    const dishId = dishSnapshot.dishId; // dùng dishId, không dùng snapshot id
-    if (!dishMap.has(dishId)) {
-        dishMap.set(dishId, {
-            id: dishId,
-            name: dishSnapshot.name,
-            price: dishSnapshot.price,
-            description: dishSnapshot.description,
-            image: dishSnapshot.image,
-            categoryId: null as any, // Chưa có categoryId trong snapshot
-            status: dishSnapshot.status,
-            createdAt: dishSnapshot.createdAt,
-            updatedAt: dishSnapshot.updatedAt,
-            successOrders: order.quantity
-        });
-    } else {
-        const existing = dishMap.get(dishId)!;
-        existing.successOrders += order.quantity;
-    }
-});
-
-const dishIndicator = Array.from(dishMap.values());
+    const dishIndicator = Array.from(dishMap.values());
 
 
     // Tính doanh thu theo ngày
