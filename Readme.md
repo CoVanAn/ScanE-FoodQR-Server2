@@ -106,8 +106,8 @@ CLOUDINARY_API_SECRET=your_api_secret
 CLIENT_URL=http://localhost:3000
 
 # Initial Owner Account
-INITIAL_EMAIL_OWNER=admin@order.com
-INITIAL_PASSWORD_OWNER=123456
+INITIAL_EMAIL_OWNER=gmailcuaban.com
+INITIAL_PASSWORD_OWNER=matkhaucuaban
 ```
 
 ### Chạy ứng dụng
@@ -260,4 +260,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Tài khoản mặc định
 
-**Admin**: admin@order.com | 123456
+**Admin**: admin@order.com - mật khẩu không public
