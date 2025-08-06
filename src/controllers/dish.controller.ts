@@ -1,17 +1,43 @@
 import prisma from '@/database'
 import { CreateDishBodyType, UpdateDishBodyType } from '@/schemaValidations/dish.schema'
 
-export const getDishList = () => {
-  return prisma.dish.findMany({
-    orderBy: [
-      { isFeatured: 'desc' },      // Featured dishes first
-      { featuredOrder: 'asc' },    // Order by featured position
-      { createdAt: 'desc' }        // Then by newest
-    ],
-    include: {
-      category: true
+export const getDishList = async (options?: {
+  page?: number
+  limit?: number
+  categoryId?: number
+}) => {
+  const { page = 1, limit = 8, categoryId } = options || {}
+  const skip = (page - 1) * limit
+
+  const where = categoryId ? { categoryId } : {}
+
+  const [dishes, total] = await Promise.all([
+    prisma.dish.findMany({
+      where,
+      orderBy: [
+        { isFeatured: 'desc' },      // Featured dishes first
+        { featuredOrder: 'asc' },    // Order by featured position
+        { createdAt: 'desc' }        // Then by newest
+      ],
+      include: {
+        category: true
+      },
+      skip,
+      take: limit
+    }),
+    prisma.dish.count({ where })
+  ])
+
+  return {
+    data: dishes,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      hasMore: page * limit < total
     }
-  })
+  }
 }
 
 export const getDishDetail = (id: number) => {

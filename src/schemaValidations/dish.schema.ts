@@ -43,9 +43,18 @@ export const DishRes = z.object({
 
 export type DishResType = z.TypeOf<typeof DishRes>
 
+export const PaginationSchema = z.object({
+  page: z.number(),
+  limit: z.number(),
+  total: z.number(),
+  totalPages: z.number(),
+  hasMore: z.boolean()
+})
+
 export const DishListRes = z.object({
   data: z.array(DishSchema),
-  message: z.string()
+  message: z.string(),
+  pagination: PaginationSchema.optional()
 })
 
 export type DishListResType = z.TypeOf<typeof DishListRes>

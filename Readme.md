@@ -260,4 +260,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Tài khoản mặc định
 
-**Admin**: admin@order.com - mật khẩu không public
+**Admin**: **Admin**: admin@order.com - 123456
