@@ -18,6 +18,11 @@ import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
 export default async function dishRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.get<{
+    Querystring: {
+      page?: string
+      limit?: string
+      categoryId?: string
+    }
     Reply: DishListResType
   }>(
     '/',
@@ -29,10 +34,18 @@ export default async function dishRoutes(fastify: FastifyInstance, options: Fast
       }
     },
     async (request, reply) => {
-      const dishs = await getDishList()
+      const { page, limit, categoryId } = request.query
+      const options = {
+        page: page ? parseInt(page) : undefined,
+        limit: limit ? parseInt(limit) : undefined,
+        categoryId: categoryId ? parseInt(categoryId) : undefined
+      }
+      
+      const result = await getDishList(options)
       reply.send({
-        data: dishs as DishListResType['data'],
-        message: 'Lấy danh sách món ăn thành công!'
+        data: result.data as DishListResType['data'],
+        message: 'Lấy danh sách món ăn thành công!',
+        pagination: result.pagination
       })
     }
   )
