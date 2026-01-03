@@ -8,7 +8,6 @@
     "strict": false /* Disable strict type-checking for deployment */,
     "noImplicitAny": false /* Allow implicit any types */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
-    "ignoreDeprecations": "6.0",
     "baseUrl": ".", // Đường dẫn base cho các import
     "paths": {
       "@/*": ["src/*"] // Đường dẫn tương đối cho các import (alias)
