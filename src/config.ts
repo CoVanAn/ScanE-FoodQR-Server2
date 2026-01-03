@@ -67,4 +67,6 @@ if (!configProject.success) {
 const envConfig = configProject.data
 export default envConfig
 
-export const API_URL = `${envConfig.PROTOCOL}://${envConfig.DOMAIN}:${envConfig.PORT}`
+// Build API_URL safely: omit port when using standard 80/443 to avoid invalid hostnames in redirects (VNPay return URL)
+const portSegment = envConfig.PORT && ![80, 443].includes(envConfig.PORT) ? `:${envConfig.PORT}` : ''
+export const API_URL = `${envConfig.PROTOCOL}://${envConfig.DOMAIN}${portSegment}`
