@@ -26,6 +26,7 @@ model Account {
   orders       Order[]
   refreshToken RefreshToken[]
   sockets      Socket?
+  // stockIns     StockIn[]      
 }
 
 model Dish {
@@ -122,3 +123,32 @@ model Category {
   updatedAt DateTime @updatedAt
   dishes    Dish[]
 }
+
+// // Phiếu nhập kho
+// model StockIn {
+//   id            Int           @id @default(autoincrement())
+//   accountId     Int           // Nhân viên ghi nhận
+//   invoiceNumber String?       // Số hóa đơn
+//   supplierName  String?       // Tên nhà cung cấp
+//   totalCost     Decimal       @db.Decimal(10, 2)
+//   notes         String?
+//   createdAt     DateTime      @default(now())
+//   updatedAt     DateTime      @updatedAt
+//   account       Account       @relation(fields: [accountId], references: [id])
+//   items         StockInItem[]
+// }
+
+// // Chi tiết sản phẩm nhập
+// model StockInItem {
+//   id          Int      @id @default(autoincrement())
+//   stockInId   Int
+//   productName String   // Tên sản phẩm
+//   quantity    Decimal  @db.Decimal(10, 2)
+//   unit        String   // kg, lít, cái...
+//   unitPrice   Decimal  @db.Decimal(10, 2)
+//   totalPrice  Decimal  @db.Decimal(10, 2)
+//   notes       String?
+//   createdAt   DateTime @default(now())
+
+//   stockIn StockIn @relation(fields: [stockInId], references: [id], onDelete: Cascade)
+// }

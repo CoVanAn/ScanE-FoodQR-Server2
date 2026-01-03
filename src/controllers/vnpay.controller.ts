@@ -6,8 +6,8 @@ import { debugSocketRooms } from '@/utils/socket';
 
 // Khởi tạo instance VNPay
 const vnpay = new VNPay({
-    tmnCode: 'WGIYWTTJ',
-    secureSecret: '9LW9WT2MFZSWV7ZGMA8NPO3WY0BLX4ED',
+    tmnCode: '12R4XNX4',
+    secureSecret: '7DEM3BUPSFOF60BUNOXAEI9RE8H356CC',
     vnpayHost: 'https://sandbox.vnpayment.vn',
     testMode: true,
     hashAlgorithm: 'SHA512' as any,
@@ -25,7 +25,12 @@ export const createPaymentUrl = async (amount: number, ipAddr: string, orderInfo
     
     // Mã hóa orderIds vào orderInfo để có thể truy xuất khi callback
     const encodedOrderInfo = orderInfo + '|' + JSON.stringify(orderIds);
-      // Tạo URL thanh toán
+    
+    // Format thời gian và ghi log để kiểm tra
+    const createDate = dateFormat(new Date());
+    const expireDate = dateFormat(tomorrow);
+    
+    // Tạo URL thanh toán
     const vnpayResponse = await vnpay.buildPaymentUrl({
         vnp_Amount: amount * 100, // VNPay yêu cầu số tiền * 100
         vnp_IpAddr: ipAddr,
@@ -34,8 +39,8 @@ export const createPaymentUrl = async (amount: number, ipAddr: string, orderInfo
         vnp_OrderType: ProductCode.Other,
         vnp_ReturnUrl: `${API_URL}/vnpay/check-payment`,
         vnp_Locale: VnpLocale.VN,
-        vnp_CreateDate: dateFormat(new Date()),
-        vnp_ExpireDate: dateFormat(tomorrow),
+        vnp_CreateDate: createDate,
+        vnp_ExpireDate: expireDate,
     });
 
     return {
