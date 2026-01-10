@@ -6,7 +6,7 @@ export const getDishList = async (options?: {
   limit?: number
   categoryId?: number
 }) => {
-  const { page = 1, limit = 8, categoryId } = options || {}
+  const { page = 1, limit = 20, categoryId } = options || {}
   const skip = (page - 1) * limit
 
   const where = categoryId ? { categoryId } : {}
